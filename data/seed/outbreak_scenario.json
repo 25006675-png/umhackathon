@@ -1,0 +1,40 @@
+{
+  "_comment": "3-day CRD outbreak demo scenario — populate with actual values during implementation",
+  "farm": {
+    "farm_id": "farm_001",
+    "name": "Demo Farm",
+    "location": "Selangor, Malaysia"
+  },
+  "flock": {
+    "flock_id": "flock_2026_batch3",
+    "size": 5000,
+    "start_date": "2026-03-26",
+    "age_days": 28
+  },
+  "readings": [
+    {
+      "_day": "Day 1 — Early Signals (Moderate Risk)",
+      "timestamp": "2026-04-23T08:00:00+08:00",
+      "temperature_celsius": null,
+      "feed_intake_kg": null,
+      "mortality_count": null,
+      "farmer_notes": ""
+    },
+    {
+      "_day": "Day 2 — Escalation (High Risk)",
+      "timestamp": "2026-04-24T08:00:00+08:00",
+      "temperature_celsius": null,
+      "feed_intake_kg": null,
+      "mortality_count": null,
+      "farmer_notes": ""
+    },
+    {
+      "_day": "Day 3 — Outcome Comparison",
+      "timestamp": "2026-04-25T08:00:00+08:00",
+      "temperature_celsius": null,
+      "feed_intake_kg": null,
+      "mortality_count": null,
+      "farmer_notes": ""
+    }
+  ]
+}

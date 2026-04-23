@@ -1,0 +1,29 @@
+{
+  "_comment": "3 days of normal baseline readings before the outbreak begins — needed to establish rolling averages",
+  "readings": [
+    {
+      "_day": "Baseline Day 1",
+      "timestamp": "2026-04-20T08:00:00+08:00",
+      "temperature_celsius": null,
+      "feed_intake_kg": null,
+      "mortality_count": null,
+      "farmer_notes": ""
+    },
+    {
+      "_day": "Baseline Day 2",
+      "timestamp": "2026-04-21T08:00:00+08:00",
+      "temperature_celsius": null,
+      "feed_intake_kg": null,
+      "mortality_count": null,
+      "farmer_notes": ""
+    },
+    {
+      "_day": "Baseline Day 3",
+      "timestamp": "2026-04-22T08:00:00+08:00",
+      "temperature_celsius": null,
+      "feed_intake_kg": null,
+      "mortality_count": null,
+      "farmer_notes": ""
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+# Web framework
+fastapi
+uvicorn[standard]
+
+# Data validation
+pydantic
+
+# Database
+sqlalchemy
+aiosqlite
+
+# Z.AI GLM client
+httpx
+
+# RAG pipeline
+faiss-cpu
+chromadb
+sentence-transformers
+
+# Document processing
+pypdf
+langchain-text-splitters
+
+# Utilities
+python-dotenv
