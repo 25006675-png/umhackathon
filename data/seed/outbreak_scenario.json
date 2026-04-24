@@ -21,20 +21,12 @@
       "farmer_notes": "ayam senyap sikit hari ini"
     },
     {
-      "_day": "Day 2 - Risk Escalation",
+      "_day": "Day 2 - Risk Escalation (current)",
       "timestamp": "2026-04-24T08:00:00+08:00",
       "temperature_celsius": 33.2,
       "feed_intake_kg": 41.0,
       "mortality_count": 3,
       "farmer_notes": "kurang makan, nampak lemah, nafas laju"
-    },
-    {
-      "_day": "Day 3 - With Early Intervention",
-      "timestamp": "2026-04-25T08:00:00+08:00",
-      "temperature_celsius": 31.0,
-      "feed_intake_kg": 45.0,
-      "mortality_count": 4,
-      "farmer_notes": "asingkan ayam lemah, tambah ventilasi, hubungi vet"
     }
   ],
   "comparison_outcomes": {
