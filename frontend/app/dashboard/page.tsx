@@ -5,7 +5,7 @@ import Link from 'next/link'
 import type { FarmAnalysis, GLMAnalysis, Alert } from '@/lib/types'
 import {
   getAnalysis, getGLMAnalysis, getAlerts,
-  DUMMY_ANALYSIS, DUMMY_GLM, DUMMY_ALERTS,
+  DUMMY_ANALYSIS, DUMMY_ALERTS,
 } from '@/lib/api'
 import AlertBanner from '@/components/AlertBanner'
 import RiskGauge from '@/components/RiskGauge'
@@ -20,26 +20,39 @@ const FLOCK_ID = 'flock_2026_batch3'
 
 export default function DashboardPage() {
   const [analysis, setAnalysis] = useState<FarmAnalysis>(DUMMY_ANALYSIS)
-  const [glm, setGlm] = useState<GLMAnalysis>(DUMMY_GLM)
+  const [glm, setGlm] = useState<GLMAnalysis | null>(null)
   const [alerts, setAlerts] = useState<Alert[]>(DUMMY_ALERTS)
   const [glmEnabled, setGlmEnabled] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [glmLoading, setGlmLoading] = useState(false)
+  const [glmError, setGlmError] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
       setLoading(true)
-      const [a, g, al] = await Promise.allSettled([
+      const [a, al] = await Promise.allSettled([
         getAnalysis(FLOCK_ID),
-        getGLMAnalysis(FLOCK_ID),
         getAlerts(FLOCK_ID),
       ])
       if (a.status === 'fulfilled') setAnalysis(a.value)
-      if (g.status === 'fulfilled') setGlm(g.value)
       if (al.status === 'fulfilled') setAlerts(al.value)
       setLoading(false)
     }
     load()
   }, [])
+
+  async function generateAIAnalysis() {
+    setGlmLoading(true)
+    setGlmError(null)
+    try {
+      const g = await getGLMAnalysis(FLOCK_ID)
+      setGlm(g)
+    } catch {
+      setGlmError('AI analysis failed. Make sure the backend is running.')
+    } finally {
+      setGlmLoading(false)
+    }
+  }
 
   const activeAlert = alerts.find((a) => a.active) ?? null
 
@@ -122,12 +135,56 @@ export default function DashboardPage() {
 
             <RiskTrendChart scores={analysis.risk.previous_scores} />
 
-            {glmEnabled ? (
+            {/* AI Analysis gate — demonstrates GLM centrality */}
+            {glmEnabled && !glm && (
+              <div
+                className="rounded-xl p-6 flex flex-col items-center text-center gap-3"
+                style={{
+                  backgroundColor: 'var(--surface)',
+                  border: '1px dashed var(--border-mid)',
+                  boxShadow: 'var(--shadow-sm)',
+                }}
+              >
+                <div>
+                  <div className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>
+                    Raw numbers alone don&apos;t tell you what to do.
+                  </div>
+                  <div className="text-xs" style={{ color: 'var(--ink-3)' }}>
+                    Generate an AI-powered interpretation, diagnosis, and action plan for this flock.
+                  </div>
+                </div>
+                <button
+                  onClick={generateAIAnalysis}
+                  disabled={glmLoading}
+                  className="text-sm font-semibold px-5 py-2.5 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50"
+                  style={{ backgroundColor: '#ea580c', color: '#ffffff' }}
+                >
+                  {glmLoading ? 'Generating…' : 'Generate AI Analysis →'}
+                </button>
+                {glmError && (
+                  <div className="text-xs" style={{ color: '#dc2626' }}>
+                    {glmError}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {glmEnabled && glm && (
               <>
                 <GLMInsightPanel analysis={glm} />
                 <ActionList actions={glm.recommendations} />
+                <button
+                  onClick={generateAIAnalysis}
+                  disabled={glmLoading}
+                  className="text-xs font-semibold self-start px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 disabled:opacity-50"
+                  style={{ backgroundColor: 'var(--surface-2)', color: 'var(--ink-2)', border: '1px solid var(--border)' }}
+                >
+                  {glmLoading ? 'Regenerating…' : '↻ Regenerate AI Analysis'}
+                </button>
               </>
-            ) : (
+            )}
+
+            {!glmEnabled && (
               <div
                 className="rounded-xl p-6 text-center"
                 style={{

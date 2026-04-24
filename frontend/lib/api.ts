@@ -1,6 +1,6 @@
 import type { FarmAnalysis, GLMAnalysis, Alert, DailyReadingInput, FeedbackInput } from './types'
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? ''
+const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
 
 // Dummy data matching the agreed JSON schema from work_split.md
 export const DUMMY_ANALYSIS: FarmAnalysis = {

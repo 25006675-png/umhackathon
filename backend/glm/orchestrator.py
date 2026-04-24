@@ -112,6 +112,28 @@ class GLMOrchestrator:
         assessment: RiskAssessment,
         language: str = "bilingual",
     ) -> str:
+        if self.client.is_configured:
+            system_prompt = (
+                "You are TernakAI, a poultry-farm assistant for Malaysian farmers. "
+                "Reply concisely (2-4 short sentences). Mix Bahasa Melayu and English naturally. "
+                "Ground answers in the farm data context provided. If the user asks about general poultry "
+                "health, give practical, safe advice."
+            )
+            user_prompt = (
+                f"Farm context for flock {assessment.flock_id}:\n"
+                f"- Risk: {assessment.risk.level} ({assessment.risk.score}/100), trend {assessment.risk.trend}\n"
+                f"- Temp {assessment.signals.temperature_celsius}C (baseline {assessment.baselines.temperature_celsius}C)\n"
+                f"- Feed {assessment.signals.feed_intake_kg}kg (baseline {assessment.baselines.feed_intake_kg}kg)\n"
+                f"- Mortality {assessment.signals.mortality_count} today\n"
+                f"- Farmer notes: {assessment.signals.farmer_notes or 'none'}\n\n"
+                f"Farmer's question: {question}\n\n"
+                f"Respond directly to the question."
+            )
+            try:
+                return await self.client.complete(system_prompt, user_prompt, max_tokens=400)
+            except (GLMClientError, httpx.HTTPError) as exc:
+                print(f"[glm] chat live call failed: {type(exc).__name__}: {exc}", file=sys.stderr)
+
         lowered = question.lower()
         if "why" in lowered or "kenapa" in lowered:
             return (

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Spectral, Epilogue } from 'next/font/google'
+import type { ReactNode } from 'react'
 import './globals.css'
 import BottomNav from '@/components/BottomNav'
 import Sidebar from '@/components/Sidebar'
@@ -30,7 +31,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={`${spectral.variable} ${epilogue.variable} font-sans min-h-screen`}>

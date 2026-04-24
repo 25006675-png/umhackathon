@@ -137,3 +137,62 @@ class AlertResponse(BaseModel):
     alert_level: RiskLevel
     message: str
     recommended_actions: list[str] = Field(default_factory=list)
+
+
+class FlockCreateInput(BaseModel):
+    flock_id: str
+    farm_id: str = "farm_001"
+    flock_size: int
+    age_days: int = 0
+
+
+class FeedbackInput(BaseModel):
+    flock_id: str
+    action_taken: str
+    outcome: str
+
+
+# Aliases expected by api/routes/analysis.py
+FarmDataResponse = RiskAssessment
+Signals = FarmSignals
+Baselines = FarmBaselines
+Deviations = FarmDeviations
+Risk = RiskSummary
+Projections = ProjectionSummary
+
+
+# Frontend-facing simplified GLM shape (flattened strings for lists/narration)
+class FrontendHypothesis(BaseModel):
+    disease: str
+    confidence: float = Field(ge=0, le=1)
+    reasoning: str
+    citations: list[str] = Field(default_factory=list)
+
+
+class FrontendGLMAnalysis(BaseModel):
+    interpretation: str
+    hypothesis: list[FrontendHypothesis]
+    recommendations: list[str]
+    narration: str
+    constraint_based_recs: list[str] = Field(default_factory=list)
+    generated_at: str
+    generated_by: str = "offline-glm-fallback"
+
+
+class FrontendAlert(BaseModel):
+    id: str
+    flock_id: str
+    risk_level: RiskLevel
+    trigger: str
+    immediate_action: str
+    created_at: str
+    active: bool = True
+
+
+class ChatMessageRequest(BaseModel):
+    message: str
+    flock_id: str = "flock_2026_batch3"
+
+
+class ChatMessageResponse(BaseModel):
+    reply: str

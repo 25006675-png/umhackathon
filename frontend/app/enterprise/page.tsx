@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import {
   Home, BarChart2, FileText, Settings, Layers,
   Thermometer, AlertTriangle, Zap, Activity,
@@ -122,7 +123,7 @@ function Sparkline({ values, good }: { values: readonly number[], good: boolean 
 function SignalCard({
   icon, label, labelEn, value, unit, baseline, deviation, history, badDir,
 }: {
-  icon: React.ReactNode
+  icon: ReactNode
   label: string; labelEn: string
   value: number; unit: string; baseline: number
   deviation: number; history: readonly number[]
@@ -466,7 +467,7 @@ export default function EnterpriseDashboard() {
               </div>
             </div>
             <ResponsiveContainer width="100%" height={170}>
-              <AreaChart data={d.trend} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+              <AreaChart data={[...d.trend]} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="rg" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%"  stopColor={sc} stopOpacity={0.18} />

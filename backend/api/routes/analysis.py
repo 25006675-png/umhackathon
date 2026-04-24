@@ -43,7 +43,12 @@ def build_analysis(flock_id: str, persist_alert: bool = False):
         flock_age_days=flock_info["flock_age_days"],
         flock_size=flock_info["flock_size"],
         timestamp=datetime.now(),
-        signals=Signals(**current_reading),
+        signals=Signals(
+            temperature_celsius=current_reading["temperature_celsius"],
+            feed_intake_kg=current_reading["feed_intake_kg"],
+            mortality_count=current_reading["mortality_count"],
+            farmer_notes=current_reading.get("farmer_notes") or "",
+        ),
         baselines=Baselines(**baselines),
         deviations=Deviations(**deviations),
         risk=Risk(**risk),

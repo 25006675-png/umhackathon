@@ -27,7 +27,6 @@ export default function ProjectionSummary({ projections }: Props) {
         boxShadow: 'var(--shadow-sm)',
       }}
     >
-      {/* Header */}
       <div
         className="px-5 py-3"
         style={{ borderBottom: '1px solid var(--border)', backgroundColor: 'var(--surface-2)' }}
@@ -38,7 +37,6 @@ export default function ProjectionSummary({ projections }: Props) {
       </div>
 
       <div className="grid grid-cols-2">
-        {/* Without action */}
         <div
           className="p-5"
           style={{ backgroundColor: '#fef2f2', borderRight: '1px solid #fca5a5' }}
@@ -53,22 +51,21 @@ export default function ProjectionSummary({ projections }: Props) {
             <div>
               <div className="text-xs mb-1" style={{ color: '#94a3b8' }}>Mortality Rate</div>
               <div className="font-display text-3xl font-bold leading-none" style={{ color: '#dc2626' }}>
-                {minPct}–{maxPct}%
+                {minPct}-{maxPct}%
               </div>
               <div className="text-xs mt-1" style={{ color: '#94a3b8' }}>
-                {fmt(minBirds)}–{fmt(maxBirds)} birds
+                {fmt(minBirds)}-{fmt(maxBirds)} birds
               </div>
             </div>
             <div>
               <div className="text-xs mb-1" style={{ color: '#94a3b8' }}>Estimated Loss</div>
               <div className="font-display text-lg font-bold" style={{ color: '#dc2626' }}>
-                RM {fmt(minLoss)}–{fmt(maxLoss)}
+                RM {fmt(minLoss)}-{fmt(maxLoss)}
               </div>
             </div>
           </div>
         </div>
 
-        {/* With action */}
         <div className="p-5" style={{ backgroundColor: '#f0fdf4' }}>
           <div className="flex items-center gap-2 mb-4">
             <span className="w-2 h-2 rounded-full bg-green-600" />
@@ -80,13 +77,13 @@ export default function ProjectionSummary({ projections }: Props) {
             <div>
               <div className="text-xs mb-1" style={{ color: '#94a3b8' }}>Reduced Loss</div>
               <div className="font-display text-lg font-bold" style={{ color: '#16a34a' }}>
-                RM {fmt(minEarly)}–{fmt(maxEarly)}
+                RM {fmt(minEarly)}-{fmt(maxEarly)}
               </div>
             </div>
             <div>
               <div className="text-xs mb-1" style={{ color: '#94a3b8' }}>You Save</div>
               <div className="font-display text-3xl font-bold leading-none" style={{ color: '#16a34a' }}>
-                RM {fmt(saveLow)}–{fmt(saveHigh)}
+                RM {fmt(saveLow)}-{fmt(saveHigh)}
               </div>
             </div>
           </div>

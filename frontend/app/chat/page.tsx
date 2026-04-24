@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { sendChatMessage } from '@/lib/api'
+import { useEffect, useRef, useState } from 'react'
 import { Send } from 'lucide-react'
+import { sendChatMessage } from '@/lib/api'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -12,12 +12,12 @@ interface Message {
 const WELCOME: Message = {
   role: 'assistant',
   content:
-    'Welcome! I am TernakAI. Ask me anything about flock health, disease signs, medication, or prevention — in Malay or English.',
+    'Welcome! I am TernakAI. Ask me anything about flock health, disease signs, medication, or prevention in Malay or English.',
 }
 
 const SUGGESTED = [
   'What are early signs of Newcastle disease?',
-  'My chickens are eating less — what should I do?',
+  'My chickens are eating less, what should I do?',
   'How do I reduce heat stress in broilers?',
 ]
 
@@ -34,9 +34,11 @@ export default function ChatPage() {
   async function send(text?: string) {
     const msg = (text ?? input).trim()
     if (!msg || loading) return
+
     setInput('')
     setMessages((prev) => [...prev, { role: 'user', content: msg }])
     setLoading(true)
+
     try {
       const reply = await sendChatMessage(msg, 'flock_2026_batch3')
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
@@ -54,7 +56,6 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col h-[calc(100dvh-108px)] md:h-screen">
-      {/* Page header */}
       <div
         className="px-6 md:px-10 py-5 flex-shrink-0"
         style={{ backgroundColor: 'var(--surface)', borderBottom: '1px solid var(--border)' }}
@@ -63,18 +64,17 @@ export default function ChatPage() {
           Ask AI
         </h1>
         <p className="text-sm mt-0.5" style={{ color: 'var(--ink-3)' }}>
-          Flock health assistant · Malay &amp; English
+          Flock health assistant | Malay &amp; English
         </p>
       </div>
 
-      {/* Messages area */}
       <div
         className="flex-1 overflow-y-auto px-4 md:px-10 py-5 space-y-4"
         style={{ backgroundColor: '#f1f5f9' }}
       >
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            {m.role === 'assistant' && (
+        {messages.map((message, i) => (
+          <div key={i} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+            {message.role === 'assistant' && (
               <div
                 className="w-7 h-7 rounded-full flex items-center justify-center text-xs mr-2.5 flex-shrink-0 mt-0.5 font-display font-bold"
                 style={{ backgroundColor: '#ea580c', color: '#ffffff' }}
@@ -85,7 +85,7 @@ export default function ChatPage() {
             <div
               className="max-w-[78%] md:max-w-[60%] px-4 py-3 text-sm leading-relaxed"
               style={
-                m.role === 'user'
+                message.role === 'user'
                   ? {
                       backgroundColor: '#0f172a',
                       color: '#f8fafc',
@@ -101,7 +101,7 @@ export default function ChatPage() {
                     }
               }
             >
-              {m.content}
+              {message.content}
             </div>
           </div>
         ))}
@@ -114,10 +114,10 @@ export default function ChatPage() {
             >
               Suggested Questions
             </p>
-            {SUGGESTED.map((q) => (
+            {SUGGESTED.map((question) => (
               <button
-                key={q}
-                onClick={() => send(q)}
+                key={question}
+                onClick={() => send(question)}
                 className="text-left px-4 py-3 rounded-xl text-sm transition-opacity hover:opacity-75"
                 style={{
                   backgroundColor: '#ffffff',
@@ -126,7 +126,7 @@ export default function ChatPage() {
                   boxShadow: 'var(--shadow-sm)',
                 }}
               >
-                {q}
+                {question}
               </button>
             ))}
           </div>
@@ -161,10 +161,10 @@ export default function ChatPage() {
             </div>
           </div>
         )}
+
         <div ref={bottomRef} />
       </div>
 
-      {/* Input bar */}
       <div
         className="flex gap-3 px-4 md:px-10 py-4 flex-shrink-0"
         style={{
@@ -178,7 +178,7 @@ export default function ChatPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && send()}
-          placeholder="Ask about your flock…"
+          placeholder="Ask about your flock..."
           disabled={loading}
           className="flex-1 rounded-lg px-4 py-2.5 text-sm focus:outline-none"
           style={{

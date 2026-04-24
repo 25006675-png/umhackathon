@@ -1,5 +1,6 @@
 'use client'
 
+import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { submitReading } from '@/lib/api'
@@ -52,7 +53,7 @@ export default function InputPage() {
     setForm((prev) => ({ ...prev, [key]: val }))
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError(null)

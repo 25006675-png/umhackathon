@@ -12,7 +12,7 @@ day_minus_1 = (now - timedelta(days=1)).isoformat()
 today = now.isoformat()
 
 DEMO_FLOCK = {
-    "flock_id": "flock_demo",
+    "flock_id": "flock_2026_batch3",
     "farm_id": "farm_001",
     "flock_size": 5000,
     "flock_age_days": 28,
@@ -20,7 +20,7 @@ DEMO_FLOCK = {
 
 DEMO_READINGS = [
     {
-        "flock_id": "flock_demo",
+        "flock_id": "flock_2026_batch3",
         "temperature_celsius": 30.1,
         "feed_intake_kg": 50.5,
         "mortality_count": 1,
@@ -28,7 +28,7 @@ DEMO_READINGS = [
         "timestamp": day_minus_3,
     },
     {
-        "flock_id": "flock_demo",
+        "flock_id": "flock_2026_batch3",
         "temperature_celsius": 29.9,
         "feed_intake_kg": 49.5,
         "mortality_count": 1,
@@ -36,7 +36,7 @@ DEMO_READINGS = [
         "timestamp": day_minus_2,
     },
     {
-        "flock_id": "flock_demo",
+        "flock_id": "flock_2026_batch3",
         "temperature_celsius": 30.5,
         "feed_intake_kg": 46.0,
         "mortality_count": 1,
@@ -44,7 +44,7 @@ DEMO_READINGS = [
         "timestamp": day_minus_1,
     },
     {
-        "flock_id": "flock_demo",
+        "flock_id": "flock_2026_batch3",
         "temperature_celsius": 33.2,
         "feed_intake_kg": 41.0,
         "mortality_count": 3,
