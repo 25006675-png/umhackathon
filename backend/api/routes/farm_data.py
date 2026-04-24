@@ -6,7 +6,13 @@ router = APIRouter()
 
 @router.post("/api/flocks", status_code=201)
 async def create_flock(flock: FlockCreateInput):
-    saved = register_flock(flock.flock_id, flock.flock_size, flock.farm_id, flock.age_days)
+    saved = register_flock(
+        flock.flock_id,
+        flock.flock_size,
+        flock.farm_id,
+        flock.age_days,
+        flock.start_date,
+    )
     return {"message": "Flock registered", "flock": saved}
 
 @router.post("/api/readings", status_code=201)
