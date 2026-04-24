@@ -6,7 +6,7 @@
     "location": "Selangor, Malaysia"
   },
   "flock": {
-    "flock_id": "flock_demo",
+    "flock_id": "flock_2026_batch3",
     "size": 5000,
     "start_date": "2026-03-26",
     "age_days": 28
@@ -36,5 +36,21 @@
       "mortality_count": 4,
       "farmer_notes": "asingkan ayam lemah, tambah ventilasi, hubungi vet"
     }
-  ]
+  ],
+  "comparison_outcomes": {
+    "with_early_intervention": {
+      "time_horizon_days": 5,
+      "mortality_range_percent": [5, 10],
+      "mortality_range_birds": [250, 500],
+      "financial_loss_rm": [1750, 3500],
+      "summary": "Mortality stabilises after early ventilation and vet action."
+    },
+    "without_intervention": {
+      "time_horizon_days": 5,
+      "mortality_range_percent": [30, 50],
+      "mortality_range_birds": [1500, 2500],
+      "financial_loss_rm": [10500, 17500],
+      "summary": "Respiratory outbreak compounds and losses accelerate without action."
+    }
+  }
 }

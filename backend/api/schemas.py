@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -141,9 +141,10 @@ class AlertResponse(BaseModel):
 
 class FlockCreateInput(BaseModel):
     flock_id: str
-    farm_id: str = "farm_001"
     flock_size: int
+    farm_id: str = "farm_001"
     age_days: int = 0
+    start_date: date | None = None
 
 
 class FeedbackInput(BaseModel):
@@ -152,13 +153,13 @@ class FeedbackInput(BaseModel):
     outcome: str
 
 
-# Aliases expected by api/routes/analysis.py
-FarmDataResponse = RiskAssessment
+# Short-name aliases expected by analysis.py
 Signals = FarmSignals
 Baselines = FarmBaselines
 Deviations = FarmDeviations
 Risk = RiskSummary
 Projections = ProjectionSummary
+FarmDataResponse = RiskAssessment
 
 
 # Frontend-facing simplified GLM shape (flattened strings for lists/narration)
