@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -137,3 +137,29 @@ class AlertResponse(BaseModel):
     alert_level: RiskLevel
     message: str
     recommended_actions: list[str] = Field(default_factory=list)
+
+
+# --- Added from kh branch (farm_data.py / alerts.py need these) ---
+
+
+class FlockCreateInput(BaseModel):
+    flock_id: str
+    flock_size: int
+    farm_id: str = "farm_001"
+    age_days: int = 0
+    start_date: date | None = None
+
+
+class FeedbackInput(BaseModel):
+    flock_id: str
+    action_taken: str
+    outcome: str
+
+
+# Short-name aliases expected by kh's analysis.py
+Signals = FarmSignals
+Baselines = FarmBaselines
+Deviations = FarmDeviations
+Risk = RiskSummary
+Projections = ProjectionSummary
+FarmDataResponse = RiskAssessment
