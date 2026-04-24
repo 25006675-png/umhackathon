@@ -1,12 +1,14 @@
-from pydantic import BaseModel
+from datetime import date, datetime
 from typing import List, Optional
-from datetime import datetime
+
+from pydantic import BaseModel
 
 class FlockCreateInput(BaseModel):
     flock_id: str
     flock_size: int
     farm_id: str
     age_days: int
+    start_date: Optional[date] = None
 
 class DailyReadingInput(BaseModel):
     flock_id: str
@@ -14,6 +16,7 @@ class DailyReadingInput(BaseModel):
     feed_intake_kg: float
     mortality_count: int
     farmer_notes: Optional[str] = None
+    timestamp: Optional[datetime] = None
 
 class FeedbackInput(BaseModel):
     flock_id: str

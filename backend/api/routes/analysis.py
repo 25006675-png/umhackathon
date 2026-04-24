@@ -1,18 +1,26 @@
-# Analysis Routes — Layers 2-4 (Deterministic)
-#
-# GET /api/analysis/{flock_id}         — full risk assessment (deviations + risk + projections)
-# GET /api/analysis/{flock_id}/trend   — risk score trend over last N days
-# GET /api/analysis/{flock_id}/raw     — raw deterministic output only ("without GLM" mode)
+from datetime import datetime
 
 from fastapi import APIRouter, HTTPException
-from datetime import datetime
-from api.schemas import FarmDataResponse, Signals, Baselines, Deviations, Risk, Projections
+
+from api.schemas import Baselines, Deviations, FarmDataResponse, Projections, Risk, Signals
 from database.db import add_alert, get_flock, get_readings
 from engine.baseline import calculate_baselines, calculate_deviations
-from engine.risk_scoring import calculate_risk
 from engine.projection import calculate_projections
+from engine.risk_scoring import calculate_risk
+
 
 router = APIRouter()
+
+
+def calculate_effective_flock_age_days(flock_info: dict, timestamp: str) -> int:
+    start_date = flock_info.get("start_date")
+    if start_date:
+        start_date_value = datetime.fromisoformat(start_date).date()
+        reading_date = datetime.fromisoformat(timestamp).date()
+        return max(0, (reading_date - start_date_value).days)
+
+    return flock_info["flock_age_days"]
+
 
 def build_analysis(flock_id: str, persist_alert: bool = False):
     flock_info = get_flock(flock_id)
@@ -21,58 +29,72 @@ def build_analysis(flock_id: str, persist_alert: bool = False):
         raise HTTPException(status_code=404, detail="Flock or readings not found")
 
     current_reading = history[-1]
+    effective_age_days = calculate_effective_flock_age_days(
+        flock_info, current_reading["timestamp"]
+    )
 
-    # 1. Baselines & Deviations
-    baselines = calculate_baselines(history[:-1]) # Baseline uses previous days
+    baselines = calculate_baselines(
+        history[:-1],
+        current_age_days=effective_age_days,
+        target_timestamp=current_reading.get("timestamp"),
+    )
     deviations = calculate_deviations(current_reading, baselines)
 
-    # 2. Risk Scoring
-    previous_scores = calculate_risk_trend(history[:-1])
+    previous_scores = calculate_risk_trend(history[:-1], flock_info)
     risk = calculate_risk(deviations, previous_scores)
 
-    # Trigger an alert if risk is High or Critical
     if persist_alert and risk["level"] in ["High", "Critical"]:
         add_alert(flock_id, risk["level"], risk["score"])
 
-    # 3. Projections
     projections = calculate_projections(risk["level"], flock_info["flock_size"])
 
     return FarmDataResponse(
         farm_id=flock_info["farm_id"],
         flock_id=flock_id,
-        flock_age_days=flock_info["flock_age_days"],
+        flock_age_days=effective_age_days,
         flock_size=flock_info["flock_size"],
-        timestamp=datetime.now(),
+        timestamp=datetime.fromisoformat(current_reading["timestamp"]),
         signals=Signals(**current_reading),
         baselines=Baselines(**baselines),
         deviations=Deviations(**deviations),
         risk=Risk(**risk),
-        projections=Projections(**projections)
+        projections=Projections(**projections),
     )
 
-def calculate_risk_trend(history: list):
+
+def calculate_risk_trend(history: list, flock_info: dict):
     scores = []
     for index in range(1, len(history)):
-        baselines = calculate_baselines(history[:index])
+        effective_age_days = calculate_effective_flock_age_days(
+            flock_info, history[index]["timestamp"]
+        )
+        baselines = calculate_baselines(
+            history[:index],
+            current_age_days=effective_age_days,
+            target_timestamp=history[index].get("timestamp"),
+        )
         deviations = calculate_deviations(history[index], baselines)
         risk = calculate_risk(deviations, scores)
         scores.append(risk["score"])
     return scores[-3:]
 
+
 @router.get("/api/analysis/{flock_id}", response_model=FarmDataResponse)
 async def get_full_analysis(flock_id: str):
     return build_analysis(flock_id, persist_alert=True)
+
 
 @router.get("/api/analysis/{flock_id}/trend")
 async def get_analysis_trend(flock_id: str):
     if not get_flock(flock_id):
         raise HTTPException(status_code=404, detail="Flock not found")
+    flock_info = get_flock(flock_id)
     history = get_readings(flock_id)
     if not history:
         raise HTTPException(status_code=404, detail="Readings not found")
-    return {"flock_id": flock_id, "risk_scores": calculate_risk_trend(history)}
+    return {"flock_id": flock_id, "risk_scores": calculate_risk_trend(history, flock_info)}
+
 
 @router.get("/api/analysis/{flock_id}/raw")
 async def get_raw_analysis(flock_id: str):
-    """Used for the 'Without GLM' demo toggle"""
     return build_analysis(flock_id)
