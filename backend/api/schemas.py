@@ -1,29 +1,40 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-from typing import Any, Literal
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
 
 RiskLevel = Literal["Low", "Moderate", "High", "Critical"]
 RiskTrend = Literal["stable", "rising", "falling"]
+AnalysisStatus = Literal["preliminary", "official"]
+
+
+VentilationCondition = Literal["normal", "mild", "strong", "sensor_high"]
+BehaviourFlag = Literal["water_change", "abnormal_sounds", "huddling_panting", "reduced_movement"]
 
 
 class DailyReadingInput(BaseModel):
     farm_id: str = "farm_001"
     flock_id: str = "flock_2026_batch3"
-    temperature_celsius: float
-    feed_intake_kg: float
-    mortality_count: int
+    temperature_celsius: float | None = None
+    feed_intake_kg: float | None = None
+    mortality_count: int | None = None
+    water_intake_liters: float | None = None
+    ventilation_condition: Optional[VentilationCondition] = None
+    behaviour_flags: list[BehaviourFlag] = Field(default_factory=list)
     farmer_notes: str = ""
     timestamp: datetime | None = None
 
 
 class FarmSignals(BaseModel):
-    temperature_celsius: float
-    feed_intake_kg: float
-    mortality_count: int
+    temperature_celsius: float | None = None
+    feed_intake_kg: float | None = None
+    mortality_count: int | None = None
+    water_intake_liters: float | None = None
+    ventilation_condition: VentilationCondition = "normal"
+    behaviour_flags: list[BehaviourFlag] = Field(default_factory=list)
     farmer_notes: str = ""
 
 
@@ -31,6 +42,7 @@ class FarmBaselines(BaseModel):
     temperature_celsius: float
     feed_intake_kg: float
     mortality_count: float
+    water_intake_liters: float | None = None
 
 
 class FarmDeviations(BaseModel):
@@ -44,6 +56,7 @@ class RiskSummary(BaseModel):
     level: RiskLevel
     trend: RiskTrend = "stable"
     previous_scores: list[int] = Field(default_factory=list)
+    breakdown: dict[str, Any] = Field(default_factory=dict)
 
 
 class ProjectionSummary(BaseModel):
@@ -57,6 +70,10 @@ class ProjectionSummary(BaseModel):
 class RiskAssessment(BaseModel):
     farm_id: str
     flock_id: str
+    reading_date: date
+    analysis_status: AnalysisStatus = "preliminary"
+    check_count: int = 1
+    day_completed_at: datetime | None = None
     flock_age_days: int
     flock_size: int
     timestamp: datetime
@@ -139,9 +156,6 @@ class AlertResponse(BaseModel):
     recommended_actions: list[str] = Field(default_factory=list)
 
 
-# --- Added from kh branch (farm_data.py / alerts.py need these) ---
-
-
 class FlockCreateInput(BaseModel):
     flock_id: str
     flock_size: int
@@ -156,10 +170,55 @@ class FeedbackInput(BaseModel):
     outcome: str
 
 
-# Short-name aliases expected by kh's analysis.py
+# Short-name aliases expected by analysis.py
 Signals = FarmSignals
 Baselines = FarmBaselines
 Deviations = FarmDeviations
 Risk = RiskSummary
 Projections = ProjectionSummary
 FarmDataResponse = RiskAssessment
+
+
+# Frontend-facing simplified GLM shape (flattened strings for lists/narration)
+class FrontendHypothesis(BaseModel):
+    disease: str
+    confidence: float = Field(ge=0, le=1)
+    reasoning: str
+    citations: list[str] = Field(default_factory=list)
+
+
+class FrontendGLMAnalysis(BaseModel):
+    interpretation: str
+    hypothesis: list[FrontendHypothesis]
+    recommendations: list[str]
+    narration: str
+    constraint_based_recs: list[str] = Field(default_factory=list)
+    generated_at: str
+    generated_by: str = "offline-glm-fallback"
+
+
+class DayCompletionResponse(BaseModel):
+    flock_id: str
+    reading_date: date
+    analysis_status: AnalysisStatus
+    completed_at: datetime
+
+
+class FrontendAlert(BaseModel):
+    id: str
+    flock_id: str
+    risk_level: RiskLevel
+    trigger: str
+    immediate_action: str
+    created_at: str
+    active: bool = True
+
+
+class ChatMessageRequest(BaseModel):
+    message: str
+    flock_id: str = "flock_2026_batch3"
+    language: Literal["en", "ms", "bilingual"] = "bilingual"
+
+
+class ChatMessageResponse(BaseModel):
+    reply: str

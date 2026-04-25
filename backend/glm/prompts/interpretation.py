@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from api.schemas import RiskAssessment
 
 
@@ -39,24 +41,54 @@ def build_reasoning_call_prompt(
     assessment: RiskAssessment,
     context_chunks: list[dict],
     language: str,
+    trajectory: dict[str, Any] | None = None,
 ) -> str:
     notes = assessment.signals.farmer_notes or "none"
     diseases = ", ".join(chunk["disease"] for chunk in context_chunks)
+    citations = "\n".join(
+        f"- {chunk['disease']}: {chunk['source']} | {chunk['section']} | page {chunk.get('page') or 'n/a'}"
+        for chunk in context_chunks
+    )
+    trajectory_block = _format_trajectory_block(trajectory)
     return f"""
 Reply in this EXACT format. No extra text, no headers, no markdown.
 
-INTERPRETATION: <one paragraph in {language}, max 40 words, plain language for farmer>
-HYPOTHESIS_1: <disease name> | <confidence 0.0-1.0> | <reasoning max 20 words>
-HYPOTHESIS_2: <disease name> | <confidence 0.0-1.0> | <reasoning max 20 words>
-HYPOTHESIS_3: <disease name> | <confidence 0.0-1.0> | <reasoning max 20 words>
-INSIGHT: <one forward-looking sentence, max 30 words>
+INTERPRETATION: <one paragraph in {language}, max 40 words, plain language for farmer. MUST reference the trajectory below when it is rising or worsening for multiple days.>
+HYPOTHESIS_1: <disease name> | <confidence 0.0-1.0> | <reasoning 40-60 words: explain which signals match this disease and what would raise or lower confidence> | <source> | <section>
+HYPOTHESIS_2: <disease name> | <confidence 0.0-1.0> | <reasoning 40-60 words: explain which signals match this disease and what would raise or lower confidence> | <source> | <section>
+HYPOTHESIS_3: <disease name> | <confidence 0.0-1.0> | <reasoning 40-60 words: explain which signals match this disease and what would raise or lower confidence> | <source> | <section>
+HYPOTHESIS_4: <disease name> | <confidence 0.0-1.0> | <reasoning 40-60 words: explain which signals match this disease and what would raise or lower confidence> | <source> | <section>
+INSIGHT: <one forward-looking sentence, max 30 words. Use the trajectory direction to justify urgency.>
 
 Pick diseases ONLY from: {diseases}.
+Use only these citations:
+{citations}
 
-Farm context:
-risk={assessment.risk.score}/100 ({assessment.risk.level}), trend={assessment.risk.trend}, previous={assessment.risk.previous_scores}
+Farm context (today):
+risk={assessment.risk.score}/100 ({assessment.risk.level}), trend={assessment.risk.trend}
 temperature deviation={assessment.deviations.temperature:.1%}
 feed deviation={assessment.deviations.feed_intake:.1%}
 mortality count={assessment.signals.mortality_count} vs baseline {assessment.baselines.mortality_count}
 farmer notes: {notes}
+
+Multi-day trajectory (last {len(trajectory["days"]) if trajectory and trajectory.get("days") else 0} days, oldest first):
+{trajectory_block}
 """.strip()
+
+
+def _format_trajectory_block(trajectory: dict[str, Any] | None) -> str:
+    if not trajectory or not trajectory.get("days"):
+        return "direction=stable, consecutive_worsening_days=0\n(no multi-day history available)"
+    lines = [
+        f"direction={trajectory.get('direction', 'stable')}, "
+        f"consecutive_worsening_days={trajectory.get('consecutive_worsening_days', 0)}"
+    ]
+    for day in trajectory["days"]:
+        lines.append(
+            f"- {day['reading_date']}: risk={day['score']} ({day['level']}), "
+            f"feed={day['feed_pct_vs_baseline']}% vs baseline, "
+            f"temp {day['temp_delta_c']:+.1f}°C, "
+            f"mortality={day['mortality']}, "
+            f"top_driver={day['top_driver']}"
+        )
+    return "\n".join(lines)

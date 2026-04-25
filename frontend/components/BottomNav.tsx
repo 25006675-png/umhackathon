@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, ClipboardList, MessageCircle } from 'lucide-react'
+import { Home, TrendingUp, History, MessageCircle } from 'lucide-react'
 
 const TABS = [
-  { href: '/dashboard', Icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/input',     Icon: ClipboardList,   label: 'Input' },
-  { href: '/chat',      Icon: MessageCircle,   label: 'Ask AI' },
+  { href: '/',         Icon: Home,           label: 'Today' },
+  { href: '/trends',   Icon: TrendingUp,     label: 'Trends' },
+  { href: '/history',  Icon: History,        label: 'History' },
+  { href: '/chat',     Icon: MessageCircle,  label: 'Ask AI' },
 ]
 
 export default function BottomNav() {
@@ -23,7 +24,7 @@ export default function BottomNav() {
         }}
       >
         {TABS.map(({ href, Icon, label }) => {
-          const active = pathname === href
+          const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
           return (
             <Link
               key={href}

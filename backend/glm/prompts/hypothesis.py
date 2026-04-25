@@ -25,11 +25,25 @@ FALLBACK_PROFILES = [
         "page": 2,
     },
     {
-        "disease": "Newcastle Disease",
+        "disease": "Newcastle Disease (ND)",
         "signals": ["mortality spike", "respiratory signs", "neurological signs", "feed drop"],
         "source": "Fallback Poultry Disease Profile",
         "section": "Newcastle Disease",
         "page": 3,
+    },
+    {
+        "disease": "Infectious Bronchitis (IB)",
+        "signals": ["respiratory sounds", "watery discharge", "feed drop", "egg production drop"],
+        "source": "Fallback Poultry Disease Profile",
+        "section": "Infectious Bronchitis",
+        "page": 4,
+    },
+    {
+        "disease": "Gumboro Disease (IBD)",
+        "signals": ["sudden mortality in young birds", "ruffled feathers", "prostration", "watery diarrhoea"],
+        "source": "Fallback Poultry Disease Profile",
+        "section": "Gumboro Disease",
+        "page": 5,
     },
 ]
 

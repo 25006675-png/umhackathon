@@ -88,24 +88,6 @@ export default function GLMInsightPanel({ analysis }: Props) {
           </div>
         )}
 
-        {/* Narration */}
-        {analysis.narration && (
-          <div>
-            <div className="text-xs font-semibold tracking-widest uppercase mb-2" style={{ color: 'var(--ink-3)' }}>
-              Projected Scenario
-            </div>
-            <p
-              className="text-sm leading-relaxed whitespace-pre-line rounded-lg p-3"
-              style={{
-                color: 'var(--ink-2)',
-                backgroundColor: 'var(--surface-2)',
-                border: '1px solid var(--border)',
-              }}
-            >
-              {analysis.narration}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   )

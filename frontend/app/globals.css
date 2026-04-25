@@ -41,6 +41,17 @@
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+
+  /* Earth / farm palette */
+  --earth-cream:  #fdf8f1;
+  --earth-straw:  #f6e8c8;
+  --earth-wheat:  #d4a24c;
+  --earth-barn:   #b1442c;
+  --earth-leaf:   #4f7942;
+  --earth-sky:    #dbeafe;
+
+  /* Subtle wheat-speckle pattern for backgrounds */
+  --wheat-pattern: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><g fill='none' stroke='%23d4a24c' stroke-width='0.8' opacity='0.18'><path d='M8 14 q2 -4 4 0 q-2 4 -4 0 z'/><path d='M10 14 l0 8'/><path d='M34 30 q2 -4 4 0 q-2 4 -4 0 z'/><path d='M36 30 l0 8'/><circle cx='22' cy='6' r='0.8'/><circle cx='42' cy='18' r='0.8'/><circle cx='6' cy='38' r='0.8'/></g></svg>");
 }
 
 html {
@@ -49,11 +60,49 @@ html {
 }
 
 body {
-  background-color: #f1f5f9;
+  background-color: var(--earth-cream);
+  background-image: var(--wheat-pattern);
+  background-size: 96px 96px;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Decorative classes */
+.farm-divider {
+  position: relative;
+  height: 14px;
+  background-image:
+    radial-gradient(circle at 8px 7px, var(--earth-wheat) 1.2px, transparent 1.6px),
+    radial-gradient(circle at 20px 7px, var(--earth-leaf) 1.2px, transparent 1.6px);
+  background-size: 28px 14px;
+  background-repeat: repeat-x;
+  opacity: 0.55;
+}
+
+.card-warm {
+  background-color: var(--earth-cream);
+  border: 1px solid var(--earth-straw);
+}
+
+.chip-farm {
+  background: linear-gradient(135deg, var(--earth-straw), #faeccc);
+  border: 1px solid var(--earth-wheat);
+  color: #7c4a15;
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+.floaty { animation: floaty 4s ease-in-out infinite; }
+
+@keyframes peck {
+  0%, 100% { transform: rotate(0deg); }
+  45%      { transform: rotate(-12deg); }
+  55%      { transform: rotate(0deg); }
+}
+.peck { transform-origin: 60% 70%; animation: peck 3s ease-in-out infinite; }
 
 * {
   -webkit-tap-highlight-color: transparent;
