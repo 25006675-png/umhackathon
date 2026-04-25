@@ -24,7 +24,7 @@ class DailyReadingInput(BaseModel):
     water_intake_liters: float | None = None
     ventilation_condition: Optional[VentilationCondition] = None
     behaviour_flags: list[BehaviourFlag] = Field(default_factory=list)
-    farmer_notes: str = ""
+    farmer_notes: str = Field(default="", max_length=500)
     timestamp: datetime | None = None
 
 

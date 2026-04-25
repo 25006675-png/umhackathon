@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import re
 import sys
 from datetime import datetime, timezone
@@ -88,7 +89,8 @@ class GLMOrchestrator:
         trajectory: dict[str, Any] | None = None,
     ) -> GLMAnalysis:
         farmer_constraints = farmer_constraints or {}
-        context_chunks = self._build_context_chunks(assessment)
+        loop = asyncio.get_event_loop()
+        context_chunks = await loop.run_in_executor(None, self._build_context_chunks, assessment)
         prompt_trace = {
             "reasoning_call": build_reasoning_call_prompt(
                 assessment, context_chunks, language, trajectory=trajectory
@@ -121,7 +123,8 @@ class GLMOrchestrator:
         assessment: RiskAssessment,
         language: str = "en",
     ) -> str:
-        kb_context = self._retrieve_chat_context(question, assessment)
+        loop = asyncio.get_event_loop()
+        kb_context = await loop.run_in_executor(None, self._retrieve_chat_context, question, assessment)
         if self.client.is_configured:
             language_rule = {
                 "en": (
@@ -165,7 +168,7 @@ class GLMOrchestrator:
                 f"{language_reminder}"
             )
             try:
-                return await self.client.complete(system_prompt, user_prompt, max_tokens=400)
+                return await self.client.complete(system_prompt, user_prompt, max_tokens=400, stream=True)
             except (GLMClientError, httpx.HTTPError) as exc:
                 print(f"[glm] chat live call failed: {type(exc).__name__}: {exc}", file=sys.stderr)
 
@@ -233,7 +236,8 @@ class GLMOrchestrator:
             reasoning_text = await self.client.complete(
                 REASONING_SYSTEM_PROMPT,
                 prompt_trace["reasoning_call"],
-                max_tokens=1200,
+                max_tokens=800,
+                stream=False,
             )
             sections = _parse_sections(reasoning_text)
             interpretation = sections.get("INTERPRETATION", "")
@@ -252,7 +256,8 @@ class GLMOrchestrator:
             action_text = await self.client.complete(
                 ACTION_SYSTEM_PROMPT,
                 prompt_trace["action_call"],
-                max_tokens=900,
+                max_tokens=600,
+                stream=False,
             )
             action_sections = _parse_sections(action_text)
             recommendations = self._parse_actions(action_sections)

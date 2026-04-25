@@ -1,3 +1,4 @@
+
 from __future__ import annotations
 
 from api.schemas import DiseaseHypothesis, RiskAssessment
@@ -5,7 +6,8 @@ from api.schemas import DiseaseHypothesis, RiskAssessment
 
 SYSTEM_PROMPT = (
     "You are TernakAI's farm action planner. "
-    "Return valid JSON only. No markdown, no code fences, no hidden reasoning."
+    "Reply in the exact structured text format requested. "
+    "No markdown, no code fences, no extra commentary."
 )
 
 
@@ -15,28 +17,11 @@ def build_recommendation_prompt(
 ) -> str:
     top = hypotheses[0].disease if hypotheses else "unclear disease pattern"
     return f"""
-Task: generate a practical poultry farm action plan.
-Return JSON only with this exact shape:
-{{
-  "recommendations": [
-    {{
-      "priority": 1,
-      "action": "string",
-      "timeframe": "string",
-      "reason": "string",
-      "expected_impact": "string"
-    }}
-  ]
-}}
-
 Risk: {assessment.risk.level} ({assessment.risk.score}/100), trend {assessment.risk.trend}
 Top hypothesis: {top}
 Projection without early intervention: {assessment.projections.mortality_range_birds} birds, RM {assessment.projections.financial_loss_rm}
 
-Rules:
-- Return 3 to 4 actions.
-- Prioritise urgency and operational specificity.
-- Use concrete time windows.
+Create a prioritised action plan with timeframe, reason, and expected impact.
 """.strip()
 
 

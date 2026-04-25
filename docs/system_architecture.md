@@ -17,34 +17,7 @@ This is the right architectural choice for a demo and for production hardening l
 ## 2. High-Level Architecture
 
 ```text
-Frontend (Next.js)
-    |
-    | HTTP / JSON
-    v
-Backend API (FastAPI)
-    |
-    +--> SQLite operational store
-    |      - flocks
-    |      - readings
-    |      - daily_summaries
-    |      - alerts
-    |      - feedback
-    |
-    +--> Deterministic engine
-    |      - baseline calculation
-    |      - deviation calculation
-    |      - risk scoring
-    |      - projections
-    |
-    +--> GLM orchestration
-    |      - structured reasoning call
-    |      - structured action call
-    |      - fallback local reasoning
-    |
-    +--> RAG subsystem
-           - Chroma persistent vector store
-           - JSON chunk corpus
-           - PDF knowledge base
+it
 ```
 
 ## 3. Backend Architecture

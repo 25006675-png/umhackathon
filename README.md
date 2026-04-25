@@ -1,35 +1,96 @@
+# Pitching Video
+
+**10-minute pitching video with product demonstration:**  
+https://drive.google.com/file/d/1ThucYZN7VLfYul8XoYbD5h9u8AxMIVtN/view?usp=sharing
+
 # TernakAI
 
 AI-Powered Decision Intelligence for Poultry Disease Prevention
 
-Built for UMHack 2026 — Domain: AI for Economic Empowerment & Decision Intelligence
+Built for UMHack 2026 - Domain: AI for Economic Empowerment & Decision Intelligence
+
+## Competition Submission
+
+This repository is the **single submission link** for the competition. It is intended to contain all required deliverables:
+
+1. `PRD` (Product Requirements Document) - PDF
+2. `SAD` (System Architecture Document) - PDF
+3. `QATD` (Quality Assurance / Testing Document) - PDF
+4. `Pitch Deck` - PDF
+5. `10-minute Pitching Video with Product Demonstration`
+6. `Code Repository`
+
+## Submission Notes
+
+- All documentation must be uploaded to this GitHub repository in **PDF format**, not only as Markdown.
+- The pitching video link is placed at the **top of this README** as required.
+- Judges only need to open this repository link to access the full submission package.
+
+## Deliverables Map
+
+Current repository materials relevant to the submission:
+
+- Video: top section of this README
+- Codebase: `backend/`, `frontend/`, `data/`
+- System writeups and supporting documents: `docs/`
+
+Recommended final PDF files to upload into this repository before submission:
+
+- `docs/PRD.pdf`
+- `docs/SAD.pdf`
+- `docs/QATD.pdf`
+- `docs/Pitch_Deck.pdf`
+
+Current source materials already in the repo:
+
+- [`docs/proposal.md`](docs/proposal.md)
+- [`docs/system_architecture.md`](docs/system_architecture.md)
+- [`docs/current_risk_score_rules.md`](docs/current_risk_score_rules.md)
+- [`docs/projection_rules.md`](docs/projection_rules.md)
+- [`docs/api_contract.md`](docs/api_contract.md)
+- [`docs/competition_submission_4_3.md`](docs/competition_submission_4_3.md)
+- [`docs/work_split.md`](docs/work_split.md)
+
+## Live Prototype
+
+Prototype link:  
+https://umhackathon-c2b2bqceb-choong-zhuo-lins-projects.vercel.app/
 
 ## Overview
 
-TernakAI transforms fragmented farm signals into actionable decisions by combining deterministic early-warning detection with Z.AI GLM-powered reasoning, diagnosis, and decision support.
+TernakAI transforms fragmented farm signals into actionable decisions by combining a deterministic early-warning engine with a Z.AI GLM reasoning layer. The platform ingests daily poultry farm signals such as feed intake, temperature, mortality, ventilation condition, behaviour flags, and short farmer notes, then turns them into explainable risk scores, ranked disease hypotheses, recommended actions, and loss projections.
+
+## System Summary
+
+The product is designed in two layers:
+
+1. A deterministic backend that computes baselines, deviations, risk scores, trends, alerts, and scenario projections.
+2. A GLM-based reasoning layer that explains risk in plain language, grounds likely disease hypotheses against local veterinary references, and produces context-aware action guidance.
+
+This separation is intentional. The core monitoring workflow remains usable even if the live model provider is unavailable.
 
 ## Project Structure
 
-```
+```text
 ternakAI/
-├── backend/              # Python FastAPI backend
-│   ├── api/              # API routes and request/response schemas
-│   ├── database/         # SQLite models and seed data
-│   ├── engine/           # Deterministic engines (baseline, risk, projection)
-│   ├── glm/              # Z.AI GLM integration and prompt chains
-│   └── rag/              # RAG pipeline (embedding, retrieval, knowledge base)
-├── frontend/             # Next.js frontend (dashboard + input form)
-│   ├── app/              # Next.js app router pages
-│   ├── components/       # Reusable UI components
-│   └── lib/              # API client and utilities
-├── data/                 # Seed data and demo scenario
-│   └── seed/
-└── docs/                 # Demo script, pitch notes
+|-- backend/              # FastAPI backend
+|   |-- api/              # API routes and schemas
+|   |-- database/         # SQLite persistence and seed handling
+|   |-- engine/           # Deterministic baseline, risk, projection logic
+|   |-- glm/              # Z.AI GLM client, orchestration, prompts
+|   `-- rag/              # Retrieval pipeline and veterinary knowledge base
+|-- frontend/             # Next.js frontend
+|   |-- app/              # App router pages
+|   |-- components/       # Shared UI components
+|   `-- lib/              # API client and frontend helpers
+|-- data/                 # Seed scenarios and baseline data
+`-- docs/                 # Submission docs and technical writeups
 ```
 
 ## Setup
 
 ### Backend
+
 ```bash
 cd backend
 python -m venv .venv
@@ -39,6 +100,7 @@ uvicorn main:app --reload
 ```
 
 ### Frontend
+
 ```bash
 cd frontend
 npm install
@@ -49,8 +111,8 @@ npm run dev
 
 | Role | Owner | Scope |
 |------|-------|-------|
-| Person 1 | TBD | Data & Deterministic Engine |
+| Person 1 | Kean Hong | Data & Deterministic Engine |
 | Person 2 | Zhuo Lin | GLM Integration & Reasoning |
-| Person 3 | TBD | RAG & Knowledge Base |
-| Person 4 | TBD | Frontend & Dashboard |
-| Person 5 | TBD | Demo, Pitch & Integration |
+| Person 3 | Kang Shi | RAG & Knowledge Base |
+| Person 4 | Shen En | Frontend & Dashboard |
+| Person 5 | Wei Yin | Demo, Pitch & Integration |

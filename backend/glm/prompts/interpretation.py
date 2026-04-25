@@ -7,7 +7,8 @@ from api.schemas import RiskAssessment
 
 SYSTEM_PROMPT = (
     "You are TernakAI's poultry decision engine. "
-    "Return valid JSON only. No markdown, no code fences, no hidden reasoning."
+    "Reply in the exact structured text format requested. "
+    "No markdown, no code fences, no extra commentary."
 )
 
 
@@ -49,31 +50,19 @@ def build_reasoning_call_prompt(
         f"- {chunk['disease']}: {chunk['source']} | {chunk['section']} | page {chunk.get('page') or 'n/a'}"
         for chunk in context_chunks
     )
-    trajectory_block = _format_trajectory_block(trajectory)
-    return f"""
-Reply in this EXACT format. No extra text, no headers, no markdown.
+    traj_dir = trajectory.get("direction", "stable") if trajectory else "stable"
+    traj_days = trajectory.get("consecutive_worsening_days", 0) if trajectory else 0
+    return f"""Reply EXACTLY in this format, no other text:
 
-INTERPRETATION: <one paragraph in {language}, max 40 words, plain language for farmer. MUST reference the trajectory below when it is rising or worsening for multiple days.>
-HYPOTHESIS_1: <disease name> | <confidence 0.0-1.0> | <reasoning 40-60 words: explain which signals match this disease and what would raise or lower confidence> | <source> | <section>
-HYPOTHESIS_2: <disease name> | <confidence 0.0-1.0> | <reasoning 40-60 words: explain which signals match this disease and what would raise or lower confidence> | <source> | <section>
-HYPOTHESIS_3: <disease name> | <confidence 0.0-1.0> | <reasoning 40-60 words: explain which signals match this disease and what would raise or lower confidence> | <source> | <section>
-HYPOTHESIS_4: <disease name> | <confidence 0.0-1.0> | <reasoning 40-60 words: explain which signals match this disease and what would raise or lower confidence> | <source> | <section>
-INSIGHT: <one forward-looking sentence, max 30 words. Use the trajectory direction to justify urgency.>
+INTERPRETATION: <max 35 words, plain language, mention trajectory if worsening>
+HYPOTHESIS_1: <disease> | <0.0-1.0> | <25 words: which signals match> | <source> | <section>
+HYPOTHESIS_2: <disease> | <0.0-1.0> | <25 words: which signals match> | <source> | <section>
+HYPOTHESIS_3: <disease> | <0.0-1.0> | <25 words: which signals match> | <source> | <section>
+INSIGHT: <max 20 words, urgency based on trend>
 
-Pick diseases ONLY from: {diseases}.
-Use only these citations:
-{citations}
-
-Farm context (today):
-risk={assessment.risk.score}/100 ({assessment.risk.level}), trend={assessment.risk.trend}
-temperature deviation={assessment.deviations.temperature:.1%}
-feed deviation={assessment.deviations.feed_intake:.1%}
-mortality count={assessment.signals.mortality_count} vs baseline {assessment.baselines.mortality_count}
-farmer notes: {notes}
-
-Multi-day trajectory (last {len(trajectory["days"]) if trajectory and trajectory.get("days") else 0} days, oldest first):
-{trajectory_block}
-""".strip()
+Diseases: {diseases}
+Citations: {" | ".join(f"{c['disease']}={c['source']},{c['section']},p{c.get('page','?')}" for c in context_chunks)}
+Data: risk={assessment.risk.score} {assessment.risk.level}, trend={assessment.risk.trend}, feed={assessment.deviations.feed_intake:.0%}, temp={assessment.deviations.temperature:.0%}, mortality={assessment.signals.mortality_count}vs{assessment.baselines.mortality_count}, notes={notes}, traj={traj_dir}/{traj_days}d""".strip()
 
 
 def _format_trajectory_block(trajectory: dict[str, Any] | None) -> str:
