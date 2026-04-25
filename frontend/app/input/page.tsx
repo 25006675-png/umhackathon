@@ -336,12 +336,16 @@ export default function InputPage() {
             >
               <textarea
                 rows={3}
+                maxLength={500}
                 placeholder="e.g. chickens are quiet, eating less, unusual breathing sounds"
                 value={form.farmer_notes}
                 onChange={(e) => setField('farmer_notes', e.target.value)}
                 className="w-full text-sm bg-transparent focus:outline-none resize-none leading-relaxed"
                 style={{ color: 'var(--ink)' }}
               />
+              <div className="text-right text-[11px] mt-1" style={{ color: form.farmer_notes.length > 450 ? '#dc2626' : 'var(--ink-3)' }}>
+                {form.farmer_notes.length} / 500
+              </div>
             </div>
 
             {error && (

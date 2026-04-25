@@ -1,6 +1,6 @@
 import type { FarmAnalysis, GLMAnalysis, Alert, DailyReadingInput, FeedbackInput, BehaviourFlag, RiskLevel, RiskTrend, VentilationCondition } from './types'
 
-const BASE = process.env.NEXT_PUBLIC_API_URL?.trim() ?? ''
+const BASE = (process.env.NEXT_PUBLIC_API_URL?.trim() ?? '').replace(/\/$/, '')
 
 // Dummy data matching the agreed JSON schema from work_split.md
 export const DUMMY_ANALYSIS: FarmAnalysis = {
@@ -90,7 +90,10 @@ export const DUMMY_ALERTS: Alert[] = [
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, { cache: 'no-store', ...options })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  if (!res.ok) {
+    const body = await res.text().catch(() => '')
+    throw new Error(`HTTP ${res.status}${body ? `: ${body.slice(0, 180)}` : ''}`)
+  }
   return res.json() as Promise<T>
 }
 
@@ -320,12 +323,16 @@ export async function explainRangeIntelligenceWithAI({
     return buildRangeExplanation(rangeLabel, history)
   }
 
-  const res = await fetchJSON<{ reply: string }>(`${BASE}/api/glm/trends/${flockId}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: prompt, flock_id: flockId, language: 'en' }),
-  })
-  return res.reply || buildRangeExplanation(rangeLabel, history)
+  try {
+    const res = await fetchJSON<{ reply: string }>(`${BASE}/api/glm/trends/${flockId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: prompt, flock_id: flockId, language: 'en' }),
+    })
+    return ensureRangeExplanationSections(res.reply, rangeLabel, history)
+  } catch {
+    return buildRangeExplanation(rangeLabel, history)
+  }
 }
 
 function buildRangeExplanation(rangeLabel: string, history: HistoryEntry[]): string {
@@ -361,6 +368,38 @@ function buildRangeExplanation(rangeLabel: string, history: HistoryEntry[]): str
     `Recommended Next Actions: 1. ${actionLead} 2. Physically verify barn ventilation, water delivery, feed response, and behaviour together. 3. If mortality continues to rise while intake stays weak, escalate intervention quickly.`,
     `Projected Scenario: Without intervention, estimated mortality is ${projMortPct} of the flock (${projBirds} birds) within 5 days, with financial losses of ${projLoss}. Early action could reduce losses to ${projSaving}.`,
   ].join('\n')
+}
+
+const RANGE_EXPLANATION_SECTIONS = ['Pattern Analysis', 'Recommended Next Actions', 'Projected Scenario'] as const
+
+function ensureRangeExplanationSections(reply: string | null | undefined, rangeLabel: string, history: HistoryEntry[]): string {
+  const text = reply?.trim()
+  const fallback = buildRangeExplanation(rangeLabel, history)
+  if (!text) return fallback
+
+  const missing = RANGE_EXPLANATION_SECTIONS.filter((section) => !hasSection(text, section))
+  if (missing.length === 0) return text
+
+  const fallbackSections = missing
+    .map((section) => extractPlainSection(fallback, section))
+    .filter(Boolean)
+
+  return [text, ...fallbackSections].join('\n').trim()
+}
+
+function hasSection(text: string, section: string): boolean {
+  return new RegExp(`(^|\\n)\\s*(?:[*#_\\s]*)${escapeRegExp(section)}\\s*:`, 'i').test(text)
+}
+
+function extractPlainSection(text: string, section: string): string {
+  const sections = RANGE_EXPLANATION_SECTIONS.map(escapeRegExp).join('|')
+  const re = new RegExp(`(^|\\n)\\s*(${escapeRegExp(section)}\\s*:[\\s\\S]*?)(?=\\n\\s*(?:${sections})\\s*:|$)`, 'i')
+  const match = text.match(re)
+  return match?.[2]?.trim() ?? ''
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export async function askAnalysisFollowUpWithAI({

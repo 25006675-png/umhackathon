@@ -62,33 +62,7 @@ def retrieve_knowledge_chunks(
         return []
 
     vector_chunks: list[dict[str, Any]] = []
-    try:
-        collection = _get_collection()
-        results = collection.query(
-            query_texts=[query],
-            n_results=max(top_k * 4, 8),
-        )
-        documents = (results.get("documents") or [[]])[0]
-        metadatas = (results.get("metadatas") or [[]])[0]
-        distances = (results.get("distances") or [[]])[0]
-
-        for index, text in enumerate(documents):
-            metadata = metadatas[index] if index < len(metadatas) and isinstance(metadatas[index], dict) else {}
-            distance = distances[index] if index < len(distances) else None
-            relevance_score = None
-            if isinstance(distance, (int, float)):
-                relevance_score = max(0.0, min(1.0, 1.0 - float(distance)))
-            vector_chunks.append(
-                {
-                    "text": text,
-                    "source": str(metadata.get("source") or "Knowledge Base"),
-                    "section": str(metadata.get("section") or "Unknown section"),
-                    "page": _to_int(metadata.get("page_number")),
-                    "relevance_score": relevance_score,
-                }
-            )
-    except Exception:
-        vector_chunks = []
+    # chromadb vector query skipped — lexical search covers retrieval on this environment
 
     return _hybrid_rerank(query, vector_chunks, top_k, source_hints=source_hints or [])
 

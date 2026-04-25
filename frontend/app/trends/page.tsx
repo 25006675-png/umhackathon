@@ -1184,7 +1184,7 @@ function parseAIItems(body: string): string[] {
   // Insert line breaks before inline numbered markers only (e.g., "...foo. 2. bar" -> "...foo.\n2. bar").
   // Avoid splitting on dashes mid-sentence (e.g. "**Bold** - description") — too ambiguous.
   const normalized = body
-    .replace(/[ \t]+(?=\d+[.)]\s+\S)/g, '\n')
+    .replace(/[ \t]+(?=(?:[1-9]|1\d|20)[.)]\s+\S)/g, '\n')
 
   const lines = normalized.split('\n').map((line) => line.trim()).filter(Boolean)
   const items: string[] = []

@@ -40,10 +40,10 @@ class GLMClient:
             "messages": [
                 {"role": "user", "content": _merge_prompts(system_prompt, user_prompt)},
             ],
+            "thinking": {"type": "disabled"},
             "temperature": 0.2,
             "max_tokens": max_tokens,
             "stream": stream,
-            "chat_template_kwargs": {"enable_thinking": False},
         }
         headers = {
             "Authorization": f"Bearer {self.api_key}",
