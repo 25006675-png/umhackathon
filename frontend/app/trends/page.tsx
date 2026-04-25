@@ -378,7 +378,7 @@ export default function TrendsPage() {
               <div className="ml-auto pb-2 flex-shrink-0">
                 <button
                   type="button"
-                  onClick={generateAI}
+                  onClick={() => { setAiText(''); setGlmData(null) }}
                   className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
                   style={{ backgroundColor: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--ink-2)' }}
                 >
