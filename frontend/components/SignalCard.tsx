@@ -31,6 +31,7 @@ export default function SignalCard({ label, value, unit, baseline, deviation, ba
   const pct = Math.abs(deviation * 100).toFixed(0)
   const isUp = deviation > 0.02
   const displayValue = value == null ? '—' : value
+  const formattedBaseline = baseline.toFixed(2)
 
   return (
     <div
@@ -53,7 +54,7 @@ export default function SignalCard({ label, value, unit, baseline, deviation, ba
       </div>
 
       <div className="text-[0.65rem]" style={{ color: 'var(--ink-3)' }}>
-        Baseline: {baseline} {unit}
+        Baseline: {formattedBaseline} {unit}
       </div>
 
       <div
