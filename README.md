@@ -14,7 +14,7 @@ Built for UMHack 2026 - Domain: AI for Economic Empowerment & Decision Intellige
 This repository is the **single submission link** for the competition. It is intended to contain all required deliverables:
 
 1. `PRD` (Product Requirements Document) - PDF
-2. `SAD` (System Architecture Document) - PDF
+2. `System Analysis / Architecture Document` - PDF
 3. `QATD` (Quality Assurance / Testing Document) - PDF
 4. `Pitch Deck` - PDF
 5. `10-minute Pitching Video with Product Demonstration`
@@ -25,21 +25,19 @@ This repository is the **single submission link** for the competition. It is int
 - All documentation must be uploaded to this GitHub repository in **PDF format**, not only as Markdown.
 - The pitching video link is placed at the **top of this README** as required.
 - Judges only need to open this repository link to access the full submission package.
+- The main competition documents and slide deck are stored in the **project root** for easy access.
 
 ## Deliverables Map
 
 Current repository materials relevant to the submission:
 
 - Video: top section of this README
+- Product Requirements Document: [`PRODUCT REQUIREMENT DOCUMENT (PRD).pdf`](PRODUCT%20REQUIREMENT%20DOCUMENT%20%28PRD%29.pdf)
+- System Analysis Document: [`System Analysis Documentation.pdf`](System%20Analysis%20Documentation.pdf)
+- QA / Testing Document: [`QUALITY ASSURANCE TESTING DOCUMENTATION (QATD) (1).pdf`](QUALITY%20ASSURANCE%20TESTING%20DOCUMENTATION%20%28QATD%29%20%281%29.pdf)
+- Pitch Deck: [`UMHACKATHON 2026.pdf`](UMHACKATHON%202026.pdf)
 - Codebase: `backend/`, `frontend/`, `data/`
 - System writeups and supporting documents: `docs/`
-
-Recommended final PDF files to upload into this repository before submission:
-
-- `docs/PRD.pdf`
-- `docs/SAD.pdf`
-- `docs/QATD.pdf`
-- `docs/Pitch_Deck.pdf`
 
 Current source materials already in the repo:
 
@@ -50,6 +48,7 @@ Current source materials already in the repo:
 - [`docs/api_contract.md`](docs/api_contract.md)
 - [`docs/competition_submission_4_3.md`](docs/competition_submission_4_3.md)
 - [`docs/work_split.md`](docs/work_split.md)
+
 
 ## Live Prototype
 
@@ -88,6 +87,11 @@ ternakAI/
 ```
 
 ## Setup
+
+Brief local setup:
+- Start the backend from `backend/` after installing `requirements.txt`.
+- Start the frontend from `frontend/` with `npm install` and `npm run dev`.
+- Open the frontend in your browser after the backend API is running.
 
 ### Backend
 
