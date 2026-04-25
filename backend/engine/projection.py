@@ -33,5 +33,5 @@ def calculate_projections(risk_level: str, flock_size: int):
         "mortality_range_birds": mort_birds,
         "financial_loss_rm": loss_rm,
         "early_intervention_loss_rm": early_loss_rm,
-        "time_horizon_days": 5
+        "time_horizon_days": 7
     }

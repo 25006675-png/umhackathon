@@ -2,7 +2,7 @@
 
 interface Props {
   label: string
-  value: number
+  value: number | null
   unit: string
   baseline: number
   deviation: number
@@ -30,6 +30,7 @@ export default function SignalCard({ label, value, unit, baseline, deviation, ba
   const { color, bg, border, badge } = STATUS[status]
   const pct = Math.abs(deviation * 100).toFixed(0)
   const isUp = deviation > 0.02
+  const displayValue = value == null ? '—' : value
 
   return (
     <div
@@ -46,7 +47,7 @@ export default function SignalCard({ label, value, unit, baseline, deviation, ba
 
       <div className="flex items-baseline gap-1 mt-0.5">
         <span className="font-display text-2xl font-bold leading-none" style={{ color: 'var(--ink)' }}>
-          {value}
+          {displayValue}
         </span>
         <span className="text-xs" style={{ color: 'var(--ink-3)' }}>{unit}</span>
       </div>
